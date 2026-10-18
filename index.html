@@ -103,6 +103,9 @@ footer{border-top:1px solid var(--line);padding:24px 18px;text-align:center;colo
 @keyframes dr{to{stroke-dashoffset:0}}@keyframes up{from{opacity:0;transform:translateY(24px)}}@keyframes pop{from{opacity:0;transform:scale(.4) rotate(-90deg)}}@keyframes sp{to{transform:rotate(360deg)}}@keyframes bar{to{transform:scaleX(1)}}@keyframes gl{50%{filter:drop-shadow(0 0 18px rgba(201,162,75,.65))}}@keyframes ls{from{letter-spacing:.5em;opacity:0}}
 @media(prefers-reduced-motion:no-preference){#sp .r1{stroke-dasharray:377;stroke-dashoffset:377;animation:dr 1.6s ease-out .2s forwards}#sp .r2{transform-origin:70px 70px;animation:sp 14s linear infinite}#sp .sq{transform-origin:70px 70px;animation:pop .9s cubic-bezier(.2,.8,.2,1) .5s both}#sp text{animation:up .7s ease-out 1.1s both}#sp .lg{animation:gl 2.4s ease-in-out 1.4s infinite}#sp .t1{animation:up .8s ease-out 1.3s both}#sp .t2{animation:up .8s ease-out 1.7s both}#sp .sl{animation:ls 1.1s ease-out 2.2s both}#sp .pb i{animation:bar 4s linear forwards}}
 @media(prefers-reduced-motion:reduce){#sp .pb i{transform:none}}
+#qr{position:fixed;inset:0;z-index:60;background:radial-gradient(ellipse at 50% 30%,#17466a,#07131d);color:#f3f7f9;display:grid;place-items:center;text-align:center;overflow:auto;padding:env(safe-area-inset-top,0px) 16px env(safe-area-inset-bottom,0px)}#qr[hidden]{display:none}
+#qrc{background:#fff;padding:16px;border-radius:16px;display:inline-block;line-height:0}#qr h2{margin:8px 0 0;font-size:clamp(22px,4vw,34px)}#qr p{margin:4px 0;color:#b9cbd6}.qn{font-size:22px;margin:8px 0}.qn b{color:var(--acc);font-size:36px}#qt{font-size:14px;color:#b9cbd6;min-height:24px;margin-bottom:10px}
+.nt.ok{background:rgba(46,204,113,.16);border-color:#2ecc71}.nt.ok::before{content:"\2705  "}
 </style></head><body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><g id="lgo"><path d="M280,84 L285,96 L278,153 L211,196 L162,216 L153,305 L143,352 L195,407 L205,404 L205,397 L166,354 L169,314 L176,312 L301,449 L303,462 L294,471 L204,496 L194,492 L182,497 L82,393 L75,378 L74,357 L93,209 L98,199Z"/><path d="M663,84 L658,96 L665,153 L732,196 L781,216 L790,305 L800,352 L748,407 L738,404 L738,397 L777,354 L774,314 L767,312 L642,449 L640,462 L649,471 L739,496 L749,492 L761,497 L861,393 L868,378 L869,357 L850,209 L845,199Z"/><path fill-rule="evenodd" d="M468,139 L646,272 L653,290 L652,303 L638,320 L604,316 L588,326 L582,342 L581,376 L470,470 L358,372 L305,322 L291,297 L291,290ZM517,316 L491,336 L453,336 L427,316 L427,288 L453,268 L491,268 L517,288Z"/></g></defs></svg>
 <div id="sp" role="status" aria-label="مرحباً بكم في معهد السويس العالي لنظم المعلومات الإدارية"><i class="orb o1"></i><i class="orb o2"></i>
@@ -114,6 +117,7 @@ footer{border-top:1px solid var(--line);padding:24px 18px;text-align:center;colo
 <main id="app"></main>
 <footer>معهد السويس العالي لنظم المعلومات الإدارية — معاً لمستقبل أفضل<br>الدراسة أربع سنوات · برنامج نظم المعلومات الإدارية<br>نسخة تجريبية غير رسمية، ولا علاقة لها بالمعهد أو بإدارته.</footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 const notice=()=>`<div class="nt" role="note"><b>تنويه:</b> هذا الموقع <b>نسخة تجريبية</b> وليس موقعاً رسمياً، ولا علاقة له بمعهد السويس العالي لنظم المعلومات الإدارية أو بإدارته.</div>`;
 const DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
@@ -169,14 +173,14 @@ if(!f){ERR='بيانات الدخول غير صحيحة. تأكد من الكو�
 U=f;go('dash')}
 function dash(){if(!U)return login();
 const head=`<h2>أهلاً، ${esc(U.n)}</h2>`;
-if(U.role==='student')return head+`<p class="note">الفرقة ${LV[U.l-1]} — المجموعة ${U.g}</p>${sched(U.l,U.g)}<h2>الإعلانات</h2>${annHTML()}`;
+if(U.role==='student')return head+attMsg()+`<p class="note">الفرقة ${LV[U.l-1]} — المجموعة ${U.g}</p>${sched(U.l,U.g)}${myAttHTML()}<h2>الإعلانات</h2>${annHTML()}`;
 if(U.role==='doctor'){const m=L.filter(x=>x.p.includes(U.k)).sort((a,b)=>DAYS.indexOf(a.d)-DAYS.indexOf(b.d)||a.i-b.i);
-return head+`<p class="note">إجمالي محاضراتك الأسبوعية: ${m.length}</p><div class="sw"><table><thead><tr><th>اليوم</th><th>الساعة</th><th>المقرر</th><th>الفرقة</th><th>المجموعة</th><th>المدرج</th></tr></thead><tbody>${m.map(x=>`<tr><td>${x.d}</td><td>${TS[x.i]}</td><td>${x.s}</td><td>${LV[x.l-1]}</td><td>${x.g}</td><td>${x.h}</td></tr>`).join('')}</tbody></table></div><h2>نشر خبر أو منشور</h2>${postForm()}<p><button class="btn" onclick="go('mat')">رفع محاضرة</button></p><h2>الإعلانات</h2>${annHTML()}`}
+return head+`<p class="note">إجمالي محاضراتك الأسبوعية: ${m.length}</p><div class="sw"><table><thead><tr><th>اليوم</th><th>الساعة</th><th>المقرر</th><th>الفرقة</th><th>المجموعة</th><th>المدرج</th></tr></thead><tbody>${m.map(x=>`<tr><td>${x.d}</td><td>${TS[x.i]}</td><td>${x.s}</td><td>${LV[x.l-1]}</td><td>${x.g}</td><td>${x.h}</td></tr>`).join('')}</tbody></table></div><h2>تسجيل الحضور بـ QR</h2>${attForm()}<h2>سجل جلسات الحضور</h2>${ahHTML()}<h2>نشر خبر أو منشور</h2>${postForm()}<p><button class="btn" onclick="go('mat')">رفع محاضرة</button></p><h2>الإعلانات</h2>${annHTML()}`}
 return head+`<div class="st" style="margin-top:0"><div><b>${STU.length}</b><span>طالب مسجل</span></div><div><b>${PK.length}</b><span>عضو هيئة تدريس</span></div><div><b>${L.length}</b><span>محاضرة أسبوعياً</span></div><div><b>${ANN.length}</b><span>إعلان منشور</span></div></div>
 <h2>نشر خبر أو منشور</h2>${postForm()}<p><button class="btn" onclick="go('mat')">رفع محاضرة</button></p>${ANN.map((a,i)=>`<div class="ann">${esc(a.t)} <button class="x" onclick="delA(${i})">حذف</button></div>`).join('')}
 <h2>إضافة طالب</h2><div class="card f"><div><label>الاسم</label><input id="sn"></div><div><label>الكود الأكاديمي</label><input id="sc"></div><div><label>الرقم السري</label><input id="sp"></div><div><label>الفرقة</label><select id="sl">${LV.map((n,i)=>`<option value="${i+1}">${n}</option>`).join('')}</select></div><div><label>المجموعة</label><select id="sg"><option>أ</option><option>ب</option></select></div><button class="btn" onclick="addS()">إضافة الطالب</button></div>
-<h2>الطلاب</h2><div class="sw"><table><thead><tr><th>الاسم</th><th>الكود</th><th>الفرقة</th><th>المجموعة</th><th></th></tr></thead><tbody>${STU.map((s,i)=>`<tr><td>${esc(s.n)}</td><td>${esc(s.c)}</td><td>${LV[s.l-1]}</td><td>${s.g}</td><td><button class="x" onclick="delS(${i})">حذف</button></td></tr>`).join('')}</tbody></table></div>
-<h2>حسابات هيئة التدريس</h2>${docForm()}<h2>أعباء هيئة التدريس</h2><div class="sw"><table><thead><tr><th>العضو</th><th>الكود</th><th>المحاضرات أسبوعياً</th></tr></thead><tbody>${PK.map(k=>`<tr><td>${P[k]}</td><td>${code(k)}</td><td>${L.filter(x=>x.p.includes(k)).length}</td></tr>`).join('')}</tbody></table></div>`}
+<h2>الطلاب</h2><div class="sw"><table><thead><tr><th>الاسم</th><th>الكود</th><th>الفرقة</th><th>المجموعة</th><th></th></tr></thead><tbody>${STU.map((s,i)=>`<tr><td>${esc(s.n)}</td><td>${esc(s.c)}</td><td>${LV[s.l-1]}</td><td>${s.g}</td><td><button class="x" style="color:var(--pri)" onclick="rstS(${i})">فك الجهاز</button> <button class="x" onclick="delS(${i})">حذف</button></td></tr>`).join('')}</tbody></table></div>
+<h2>حسابات هيئة التدريس</h2>${docForm()}<h2>سجل جلسات الحضور</h2>${ahHTML()}<h2>أعباء هيئة التدريس</h2><div class="sw"><table><thead><tr><th>العضو</th><th>الكود</th><th>المحاضرات أسبوعياً</th></tr></thead><tbody>${PK.map(k=>`<tr><td>${P[k]}</td><td>${code(k)}</td><td>${L.filter(x=>x.p.includes(k)).length}</td></tr>`).join('')}</tbody></table></div>`}
 function addA(){const t=$('#at').value.trim();if(!t)return;ANN.unshift({t,d:new Date().toLocaleDateString('ar-EG')});sv('sti_a',ANN);render()}
 function addS(){const n=$('#sn').value.trim(),cc=$('#sc').value.trim(),p=$('#sp').value.trim();if(!n||!cc||!p||STU.some(s=>s.c===cc))return;STU.push({c:cc,p,n,l:+$('#sl').value,g:$('#sg').value});sv('sti_s',STU);render()}
 function render(){const nv=[['home','الرئيسية'],['schedule','الجداول'],['gallery','صور المعهد'],['doctors','هيئة التدريس']];
@@ -227,8 +231,8 @@ const em=ROLE==='admin'?'admin@sti-suez.com':u.toLowerCase()+'@sti-suez.com';
 const {error}=await sb.auth.signInWithPassword({email:em,password:p});
 if(error||!(await loadU())){await sb.auth.signOut();U=null;ERR='بيانات الدخول غير صحيحة أو الحساب غير مضاف. راجع الكود والرقم السري.';return render()}
 if(U.role!==ROLE){const r=U.role;await sb.auth.signOut();U=null;ERR='هذا الحساب من نوع آخر ('+({student:'طالب',doctor:'عضو هيئة تدريس',admin:'إدارة'})[r]+'). اختر النوع الصحيح من الأعلى.';return render()}
-await Promise.all([loadA(),loadS()]);go('dash')}
-async function out(){await sb.auth.signOut();U=null;STU=[];go('home')}
+if(!(await guard()))return render();await Promise.all([loadA(),loadS(),loadAH(),loadMyAtt()]);await checkAtt();go('dash')}
+async function out(){try{if(U&&U.role==='student')await sb.rpc('release_session',{dev:DEV})}catch(e){}await sb.auth.signOut();U=null;STU=[];go('home')}
 function annHTML(){return ANN.length?ANN.map((a,i)=>`<div class="ann">${a.k?`<span class="tag ${a.k=='منشور هام'?'hot':''}">${esc(a.k)}</span> `:''}${a.h?`<b>${esc(a.h)}</b><br>`:''}${esc(a.t)}<div class="note">${a.a?esc(a.a)+' · ':''}${esc(a.d)}${U&&(U.role==='admin'||U.id===a.aid)?` <button class="x" onclick="delA(${i})">حذف</button>`:''}</div></div>`).join(''):'<p class="note">لا توجد إعلانات حالياً.</p>'}
 async function addA(){if(!U)return;const t=$('#at').value.trim();if(!t)return;const {error}=await sb.from('announcements').insert({kind:$('#ak').value,title:$('#ah').value.trim(),body:t,author_name:U.n});if(error)alert('تعذر النشر: '+error.message);await loadA();render()}
 async function delA(i){await sb.from('announcements').delete().eq('id',ANN[i].id);await loadA();render()}
@@ -253,7 +257,7 @@ function vM(i){const x=MAT[i],u=sb.storage.from('materials').getPublicUrl(x.file
 const b=x.file_type.includes('pdf')?`<iframe src="${u}" style="width:100%;height:70vh;border:0"></iframe><p><a href="${u}" target="_blank" rel="noopener">فتح في نافذة جديدة</a></p>`:`<img src="${u}" style="max-width:100%" alt="">`;
 $('#mv').innerHTML=`<div class="card"><button class="x" onclick="$('#mv').innerHTML=''">إغلاق</button>${b}</div>`;$('#mv').scrollIntoView()}
 async function dM(i){const x=MAT[i];if(!confirm('حذف المحاضرة؟'))return;await sb.storage.from('materials').remove([x.file_path]);await sb.from('materials').delete().eq('id',x.id);loadM()}
-(async()=>{await loadU();await Promise.all([loadA(),loadS()]);render()})();
+(async()=>{await loadU();await guard();await Promise.all([loadA(),loadS(),loadAH(),loadMyAtt()]);await checkAtt();render()})();
 
 const GC={all:'الكل',campus:'المبنى والساحات',halls:'القاعات والمدرجات',stud:'رعاية الطلاب والإنجازات'};
 const G=[['entrance','campus','البوابة الرئيسية للمعهد ليلاً'],['entrance-side','campus','المدخل والنافورات'],['entrance-fountain','campus','إطلالة على المدخل ونافورته'],['courtyard','campus','الساحة الداخلية والمبنى'],['courtyard-lit','campus','الساحة الداخلية مضاءة ليلاً'],['hall-large','halls','المدرج الكبير'],['hall-benches','halls','المدرج الكبير من منصة المحاضر'],['hall-wood','halls','مدرج بمقاعد خشبية'],['hall-wood2','halls','قاعة محاضرات'],['class-screen','halls','قاعة دراسية بشاشة عرض'],['class-mural','halls','قاعة دراسية بجدارية فنية'],['cabinet','stud','خزانة إنجازات رعاية الطلاب'],['trophies','stud','كؤوس وبطولات المعهد'],['first-place','stud','كأس المركز الأول'],['plaques','stud','دروع تقدير من رعاية الطلاب']];
@@ -268,6 +272,46 @@ function showLB(){const g=LBL[LB];$('#lbi').src='images/'+g[0]+'.webp';$('#lbi')
 function stepLB(d){LB=(LB+d+LBL.length)%LBL.length;showLB()}
 function closeLB(){$('#lb').hidden=true}
 addEventListener('keydown',e=>{const l=$('#lb');if(!l||l.hidden)return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(-1);if(e.key==='ArrowLeft')stepLB(1)});
+
+let AS=null,AT=null,AC=null,AK='',ATM='',AH=[],MYA=[],ATL=[];
+function attMsg(){const m=ATM;ATM='';return m?`<div class="nt ok" role="status">${m}</div>`:''}
+function attForm(){ATL=L.filter(x=>x.p.includes(U.k));if(!ATL.length)return'<p class="note">لا توجد محاضرات مسندة لك.</p>';
+return `<div class="card f"><div style="grid-column:1/-1"><label>المحاضرة</label><select id="al">${ATL.map((x,i)=>`<option value="${i}">${x.d} ${TS[x.i]} — ${x.s} (الفرقة ${LV[x.l-1]} · مجموعة ${x.g})</option>`).join('')}</select></div><div><label>مدة فتح الحضور</label><select id="am"><option value="10">10 دقائق</option><option value="20" selected>20 دقيقة</option><option value="45">45 دقيقة</option></select></div><button class="btn" onclick="startAtt()">عرض كود الحضور</button></div><p class="note">اعرض الكود على شاشة القاعة. يتغير تلقائياً كل بضع ثوانٍ حتى لا يمكن إرساله للغائبين.</p>`}
+async function startAtt(){const x=ATL[+$('#al').value],m=+$('#am').value;
+const {data,error}=await sb.from('att_sessions').insert({course:x.s,level:x.l,grp:x.g,doctor_name:U.n,ends_at:new Date(Date.now()+m*60000).toISOString()}).select().single();
+if(error){alert('تعذر بدء الحضور: '+error.message);return}
+AS=data;AK='';let e=$('#qr');if(!e){document.body.insertAdjacentHTML('beforeend','<div id="qr" hidden role="dialog" aria-modal="true"></div>');e=$('#qr')}
+e.innerHTML=`<div><h2>${esc(AS.course)}</h2><p>الفرقة ${LV[AS.level-1]} — مجموعة ${AS.grp}</p><div id="qrc"></div><p>امسح الكود بكاميرا هاتفك ثم سجّل دخولك في الموقع</p><div class="qn"><b id="qn">0</b> حاضر</div><div id="qt"></div><button class="btn" onclick="endAtt()">إنهاء الحضور</button></div>`;
+e.hidden=false;document.body.style.overflow='hidden';attTick();attCnt();AT=setInterval(attTick,6000);AC=setInterval(attCnt,5000)}
+async function attTick(){if(!AS)return;const {data}=await sb.rpc('att_token',{sid:AS.id});if(!data){endAtt();return}
+if(data===AK)return;AK=data;const q=$('#qrc');if(!q)return;q.innerHTML='';const z=Math.max(220,Math.min(520,Math.min(innerWidth-80,innerHeight*.55)));
+new QRCode(q,{text:location.origin+location.pathname+'?s='+AS.id+'&t='+data,width:z,height:z,correctLevel:QRCode.CorrectLevel.M})}
+async function attCnt(){if(!AS)return;const {data,count}=await sb.from('attendance').select('student_name',{count:'exact'}).eq('session_id',AS.id).order('scanned_at',{ascending:false}).limit(5);
+if($('#qn'))$('#qn').textContent=(count||0).toLocaleString('ar-EG');if($('#qt'))$('#qt').textContent=(data||[]).map(r=>r.student_name).join(' · ')}
+async function endAtt(){clearInterval(AT);clearInterval(AC);const id=AS&&AS.id;AS=null;if(id)await sb.from('att_sessions').update({closed:true}).eq('id',id);const e=$('#qr');if(e)e.hidden=true;document.body.style.overflow='';await loadAH();render()}
+async function loadAH(){if(!U||U.role==='student'){AH=[];return}const {data}=await sb.from('att_sessions').select('id,course,level,grp,doctor_name,created_at,attendance(count)').order('created_at',{ascending:false}).limit(30);AH=data||[]}
+const ahHTML=()=>AH.length?`<div class="sw"><table><thead><tr><th>التاريخ</th><th>المقرر</th><th>الفرقة / المجموعة</th>${U.role==='admin'?'<th>الدكتور</th>':''}<th>الحاضرون</th><th></th></tr></thead><tbody>${AH.map((x,i)=>`<tr><td>${new Date(x.created_at).toLocaleString('ar-EG',{dateStyle:'medium',timeStyle:'short'})}</td><td>${esc(x.course)}</td><td>${LV[x.level-1]} · ${x.grp}</td>${U.role==='admin'?`<td>${esc(x.doctor_name||'')}</td>`:''}<td>${((x.attendance&&x.attendance[0]&&x.attendance[0].count)||0).toLocaleString('ar-EG')}</td><td><button class="x" onclick="expAtt(${i})" style="color:var(--pri)">تصدير CSV</button></td></tr>`).join('')}</tbody></table></div>`:'<p class="note">لا توجد جلسات حضور بعد.</p>';
+async function expAtt(i){const x=AH[i];const {data}=await sb.from('attendance').select('student_code,student_name,scanned_at').eq('session_id',x.id).order('student_name');
+const r=[['الكود','الاسم','وقت الحضور'],...(data||[]).map(a=>[a.student_code,a.student_name,new Date(a.scanned_at).toLocaleString('ar-EG')])];
+const csv='\ufeff'+r.map(a=>a.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');const l=document.createElement('a');l.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));l.download='حضور-'+x.course+'.csv';l.click()}
+async function loadMyAtt(){if(!U||U.role!=='student'){MYA=[];return}const {data}=await sb.from('attendance').select('course,scanned_at').order('scanned_at',{ascending:false}).limit(200);MYA=data||[]}
+function myAttHTML(){const c={};MYA.forEach(a=>c[a.course]=(c[a.course]||0)+1);const k=Object.keys(c);
+return `<h2>سجل حضوري</h2>${k.length?`<div class="grid">${k.map(n=>`<div class="card"><b>${esc(n)}</b><p class="note">حضرت ${c[n].toLocaleString('ar-EG')} محاضرة</p></div>`).join('')}</div>`:'<p class="note">لم يُسجَّل لك حضور بعد. امسح كود الحضور من شاشة القاعة بكاميرا هاتفك.</p>'}`}
+async function checkAtt(){const q=new URLSearchParams(location.search),s=q.get('s'),t=q.get('t');if(!s||!t)return;
+history.replaceState(null,'',location.pathname);
+if(!U){V='login';ROLE='student';ERR='لا يمكن تسجيل الحضور بدون حساب. سجّل دخولك بحسابك أولاً، ثم امسح كود الحضور مرة أخرى.';return}
+if(U.role!=='student'){ATM='رابط الحضور مخصص لحسابات الطلاب.';V='dash';return}
+const {data,error}=await sb.rpc('att_mark',{sid:s,tok:t,dev:DEV});
+ATM=({ok:'تم تسجيل حضورك بنجاح على حسابك.',already:'تم تسجيل حضورك مسبقاً في هذه المحاضرة.',expired:'انتهت صلاحية الكود. امسح الكود من الشاشة مرة أخرى.',closed:'جلسة الحضور مغلقة أو منتهية.',wrong_group:'هذه المحاضرة ليست لفرقتك أو مجموعتك.',device:'هذا الجهاز غير مرتبط بحسابك حالياً. سجّل الخروج ثم الدخول من جديد.',not_student:'هذا الحساب ليس حساب طالب.'})[data]||('تعذر تسجيل الحضور'+(error?': '+error.message:'.'));
+await loadMyAtt();V='dash'}
+
+const DEV=(()=>{try{let d=localStorage.getItem('sti_dev');if(!d){d=(crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2)+Date.now());localStorage.setItem('sti_dev',d)}return d}catch(e){return 'x'+Math.random().toString(36).slice(2)}})();
+const BUSY='هذا الحساب مسجّل دخوله حالياً من جهاز آخر. سجّل الخروج من الجهاز الآخر، أو انتظر بضع دقائق، أو اطلب من الإدارة فك ارتباط الجهاز.';
+let HB=null;
+async function guard(){if(!U||U.role!=='student')return true;const {data}=await sb.rpc('claim_session',{dev:DEV});if(data!=='ok'){await sb.auth.signOut();U=null;ERR=BUSY;return false}startHB();return true}
+function startHB(){if(HB)return;HB=setInterval(hb,30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)hb()})}
+async function hb(){if(!U||U.role!=='student')return;const {data,error}=await sb.rpc('ping_session',{dev:DEV});if(!error&&data===false){await sb.auth.signOut();U=null;STU=[];V='login';ROLE='student';ERR='تم تسجيل الدخول بحسابك من جهاز آخر، فتم إنهاء هذه الجلسة.';render()}}
+async function rstS(i){const {error}=await sb.rpc('reset_session',{uid:STU[i].id});alert(error?'تعذر التنفيذ: '+error.message:'تم فك ارتباط الجهاز. يمكن للطالب الدخول من جهاز جديد.')}
 
 render();
 </script>
