@@ -75,6 +75,20 @@ footer{border-top:1px solid var(--line);padding:24px 18px;text-align:center;colo
 @keyframes fl{to{transform:translate(50px,35px) scale(1.18)}}@keyframes sh{to{background-position:-200% 0}}@keyframes pl{0%{box-shadow:0 0 0 0 rgba(46,204,113,.6)}100%{box-shadow:0 0 0 10px rgba(46,204,113,0)}}@keyframes wave{to{transform:translateX(-50%)}}@keyframes pg{from{opacity:0;transform:translateY(12px)}}
 @media(prefers-reduced-motion:no-preference){.orb{animation:fl 14s ease-in-out infinite alternate}.o2{animation-direction:alternate-reverse}.hero h1 span{animation:sh 6s linear infinite}.today h3::before{animation:pl 1.6s infinite}.wv{animation:wave 14s linear infinite}#app>h2{animation:pg .5s both}.rv{opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s,box-shadow .25s}.rv.in{opacity:1;transform:none}.card.rv.in:hover{transform:translateY(-4px);box-shadow:0 12px 26px rgba(18,48,74,.14)}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.ph{position:relative;aspect-ratio:16/9;border:0;padding:0;border-radius:14px;overflow:hidden;cursor:pointer;background:var(--soft);display:block;width:100%}
+.ph img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+.ph:hover img,.ph:focus-visible img{transform:scale(1.07)}
+.ph span{position:absolute;inset:auto 0 0;padding:28px 14px 10px;color:#fff;font-size:14px;text-align:start;background:linear-gradient(transparent,rgba(5,15,25,.82))}
+.gal .big{grid-column:span 2}.gal.sm{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}.gal.sm .big{grid-column:auto}
+#lb{position:fixed;inset:0;z-index:50;background:rgba(5,12,18,.94);display:grid;place-items:center;padding:env(safe-area-inset-top,0px) 12px env(safe-area-inset-bottom,0px)}
+#lb[hidden]{display:none}#lb figure{margin:0;text-align:center;max-width:94vw}
+#lb img{max-width:94vw;max-height:78vh;border-radius:10px;animation:pg .35s both}
+#lb figcaption{color:#e6eef3;margin-top:10px}#lb small{color:#94a9b8}
+#lb button{position:absolute;background:rgba(255,255,255,.12);color:#fff;border:0;width:46px;height:46px;border-radius:50%;font-size:22px;cursor:pointer}
+#lb button:hover{background:var(--acc);color:#12304a}#lb .c{top:max(14px,env(safe-area-inset-top,0px));left:14px}#lb .n{top:50%;right:14px}#lb .v{top:50%;left:14px}
+@media(max-width:780px){.gal .big{grid-column:auto}}
+@media(prefers-reduced-motion:reduce){.ph img{transition:none}}
 </style></head><body>
 <header><div class="bar"><div class="brand" onclick="go('home')"><div class="mono">س</div><div><b>معهد السويس العالي لنظم المعلومات الإدارية</b><small>معاً لمستقبل أفضل</small></div></div><nav id="nav"></nav></div></header>
 <main id="app"></main>
@@ -121,7 +135,7 @@ function home(){const tc=new Set(L.map(x=>x.s)).size;
 return `<section class="hero"><div><div><h1>معهد السويس العالي<span>لنظم المعلومات الإدارية</span></h1><p>معاً لمستقبل أفضل. برنامج دراسي واحد لنظم المعلومات الإدارية على أربع سنوات، وجداول محاضرات ومتابعة أكاديمية في مكان واحد.</p><button class="btn" onclick="go('schedule')">جدول المحاضرات</button><button class="btn g" onclick="go('login')">تسجيل الدخول</button></div>${todayHTML()}</div></section>
 <div class="st"><div><b>٤</b><span>فرق دراسية</span></div><div><b>${PK.length}</b><span>عضو هيئة تدريس</span></div><div><b>${tc}</b><span>مقرر هذا الفصل</span></div><div><b>${L.length}</b><span>محاضرة أسبوعياً</span></div></div>
 <h2>الفرق الدراسية</h2><div class="grid">${LV.map((n,i)=>`<button class="card lv" onclick="SL=${i+1};go('schedule')"><b>الفرقة ${n}</b><p>${[...new Set(L.filter(x=>x.l==i+1).map(x=>x.s))].length} مقررات · مجموعتان (أ، ب)</p></button>`).join('')}</div>
-<h2>آخر الإعلانات</h2>${annHTML()}`}
+${galTeaser()}<h2>آخر الإعلانات</h2>${annHTML()}`}
 function schedPage(){return `<h2>جدول محاضرات الفصل الدراسي الأول 2026/2027</h2><div class="tabs">${LV.map((n,i)=>`<button class="${SL==i+1?'on':''}" onclick="SL=${i+1};render()">الفرقة ${n}</button>`).join('')}</div><div class="tabs">${['أ','ب'].map(g=>`<button class="${SG==g?'on':''}" onclick="SG='${g}';render()">المجموعة ${g}</button>`).join('')}</div>${sched(SL,SG)}`}
 function docPage(){return `<h2>هيئة التدريس</h2><div class="grid">${PK.map(k=>{const m=[...new Set(L.filter(x=>x.p.includes(k)).map(x=>x.s))];return `<div class="card"><b>${P[k]}</b>${k==='my'?'<div class="note">عميد المعهد</div>':''}<p class="note">${m.join(' · ')}</p></div>`}).join('')}</div>`}
 function login(){const h={student:['الكود الأكاديمي','2026001 / 1234'],doctor:['كود عضو هيئة التدريس','D01 / 1234'],admin:['اسم المستخدم','admin / admin123']}[ROLE];
@@ -144,7 +158,7 @@ return head+`<div class="st" style="margin-top:0"><div><b>${STU.length}</b><span
 <h2>حسابات هيئة التدريس</h2>${docForm()}<h2>أعباء هيئة التدريس</h2><div class="sw"><table><thead><tr><th>العضو</th><th>الكود</th><th>المحاضرات أسبوعياً</th></tr></thead><tbody>${PK.map(k=>`<tr><td>${P[k]}</td><td>${code(k)}</td><td>${L.filter(x=>x.p.includes(k)).length}</td></tr>`).join('')}</tbody></table></div>`}
 function addA(){const t=$('#at').value.trim();if(!t)return;ANN.unshift({t,d:new Date().toLocaleDateString('ar-EG')});sv('sti_a',ANN);render()}
 function addS(){const n=$('#sn').value.trim(),cc=$('#sc').value.trim(),p=$('#sp').value.trim();if(!n||!cc||!p||STU.some(s=>s.c===cc))return;STU.push({c:cc,p,n,l:+$('#sl').value,g:$('#sg').value});sv('sti_s',STU);render()}
-function render(){const nv=[['home','الرئيسية'],['schedule','الجداول'],['doctors','هيئة التدريس']];
+function render(){const nv=[['home','الرئيسية'],['schedule','الجداول'],['gallery','صور المعهد'],['doctors','هيئة التدريس']];
 $('#nav').innerHTML=nv.map(n=>`<button class="${V==n[0]?'on':''}" onclick="go('${n[0]}')">${n[1]}</button>`).join('')+(U?`<button class="${V=='dash'?'on':''}" onclick="go('dash')">لوحتي</button><button onclick="out()">خروج</button>`:`<button class="cta" onclick="go('login')">دخول</button>`)+`<button onclick="tgl()" aria-label="تغيير المظهر">◐</button>`;
 $('#app').innerHTML={home,schedule:schedPage,doctors:docPage,login,dash}[V]()}
 let SS=3,MSG='',MC='';
@@ -173,11 +187,11 @@ function fx(){const a=$('#app'),rm=matchMedia('(prefers-reduced-motion:reduce)')
 if(V==='home'){$('.hero').insertAdjacentHTML('afterbegin','<i class="orb o1"></i><i class="orb o2"></i><svg class="wv" viewBox="0 0 2880 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 20Q180 0 360 20T720 20T1080 20T1440 20T1800 20T2160 20T2520 20T2880 20V40H0Z"/></svg>')}
 if(V==='mat')loadM();
 if(rm||!io)return;
-a.querySelectorAll('.card,.ann,.li,.st>div,.sw,.today').forEach((e,i)=>{e.classList.add('rv');e.style.transitionDelay=(i%8)*60+'ms';io.observe(e)});
+a.querySelectorAll('.card,.ann,.li,.st>div,.sw,.today,.ph').forEach((e,i)=>{e.classList.add('rv');e.style.transitionDelay=(i%8)*60+'ms';io.observe(e)});
 a.querySelectorAll('.st b').forEach(b=>{const o=b.textContent,n=+o.replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));if(!n)return;let s=null;const t=ts=>{s=s||ts;const p=Math.min((ts-s)/1100,1);b.textContent=Math.round(n*p).toLocaleString('ar-EG');if(p<1)requestAnimationFrame(t);else b.textContent=o};requestAnimationFrame(t)})}
 function render(){const nv=[['home','الرئيسية'],['schedule','الجداول'],['sections','السكاشن'],['ann','الإعلانات'],['mat','المحاضرات'],['doctors','هيئة التدريس']];
 $('#nav').innerHTML=nv.map(n=>`<button class="${V==n[0]?'on':''}" onclick="go('${n[0]}')">${n[1]}</button>`).join('')+(U?`<button class="${V=='dash'?'on':''}" onclick="go('dash')">لوحتي</button><button onclick="out()">خروج</button>`:`<button class="cta" onclick="go('login')">دخول</button>`)+`<button onclick="tgl()" aria-label="تغيير المظهر">◐</button>`;
-$('#app').innerHTML={home,schedule:schedPage,sections:secPage,ann:annPage,mat:matPage,doctors:docPage,login,dash}[V]();MSG='';fx()}
+$('#app').innerHTML={home,schedule:schedPage,sections:secPage,ann:annPage,mat:matPage,gallery:galPage,doctors:docPage,login,dash}[V]();MSG='';fx()}
 const SBU='https://lmqbrnygiexghohsrogv.supabase.co',SBK='sb_publishable_ylKwD_vIlMg3aF1jUiLThg_7tqS-fLe';
 const sb=supabase.createClient(SBU,SBK),sb2=supabase.createClient(SBU,SBK,{auth:{persistSession:false,autoRefreshToken:false,storageKey:'sti-aux'}});
 let MAT=[];STU=[];ANN=[];
@@ -219,6 +233,20 @@ const b=x.file_type.includes('pdf')?`<iframe src="${u}" style="width:100%;height
 $('#mv').innerHTML=`<div class="card"><button class="x" onclick="$('#mv').innerHTML=''">إغلاق</button>${b}</div>`;$('#mv').scrollIntoView()}
 async function dM(i){const x=MAT[i];if(!confirm('حذف المحاضرة؟'))return;await sb.storage.from('materials').remove([x.file_path]);await sb.from('materials').delete().eq('id',x.id);loadM()}
 (async()=>{await loadU();await Promise.all([loadA(),loadS()]);render()})();
+
+const GC={all:'الكل',campus:'المبنى والساحات',halls:'القاعات والمدرجات',stud:'رعاية الطلاب والإنجازات'};
+const G=[['entrance','campus','البوابة الرئيسية للمعهد ليلاً'],['entrance-side','campus','المدخل والنافورات'],['entrance-fountain','campus','إطلالة على المدخل ونافورته'],['courtyard','campus','الساحة الداخلية والمبنى'],['courtyard-lit','campus','الساحة الداخلية مضاءة ليلاً'],['hall-large','halls','المدرج الكبير'],['hall-benches','halls','المدرج الكبير من منصة المحاضر'],['hall-wood','halls','مدرج بمقاعد خشبية'],['hall-wood2','halls','قاعة محاضرات'],['class-screen','halls','قاعة دراسية بشاشة عرض'],['class-mural','halls','قاعة دراسية بجدارية فنية'],['cabinet','stud','خزانة إنجازات رعاية الطلاب'],['trophies','stud','كؤوس وبطولات المعهد'],['first-place','stud','كأس المركز الأول'],['plaques','stud','دروع تقدير من رعاية الطلاب']];
+let GF='all',LB=0,LBL=[];
+const ph=(g,i,big)=>`<button class="ph${big?' big':''}" onclick="openLB('${g[0]}')" aria-label="${g[2]}"><img src="images/${g[0]}.webp" width="1280" height="720" loading="lazy" decoding="async" alt="${g[2]}"><span>${g[2]}</span></button>`;
+function galPage(){const l=G.filter(g=>GF=='all'||g[1]==GF);LBL=l;
+return `<h2>صور من أرض الواقع</h2><p class="note">جولة داخل معهد السويس العالي لنظم المعلومات الإدارية: المبنى والساحات، القاعات والمدرجات، وإنجازات الطلاب.</p><div class="tabs">${Object.entries(GC).map(([k,v])=>`<button class="${GF==k?'on':''}" onclick="GF='${k}';render()">${v}</button>`).join('')}</div><div class="gal">${l.map((g,i)=>ph(g,i,i==0&&GF=='all')).join('')}</div>`}
+const galTeaser=()=>`<h2>جولة في المعهد</h2><div class="gal sm">${[0,5,3,11].map(i=>ph(G[i],i)).join('')}</div><p><button class="btn" onclick="go('gallery')">عرض كل الصور</button></p>`;
+function openLB(id){if(!LBL.some(g=>g[0]==id))LBL=G;LB=LBL.findIndex(g=>g[0]==id);let e=$('#lb');if(!e){document.body.insertAdjacentHTML('beforeend','<div id="lb" hidden role="dialog" aria-modal="true" aria-label="معرض الصور"><button class="c" onclick="closeLB()" aria-label="إغلاق">✕</button><button class="n" onclick="stepLB(1)" aria-label="التالية">›</button><button class="v" onclick="stepLB(-1)" aria-label="السابقة">‹</button><figure><img id="lbi" alt=""><figcaption id="lbc"></figcaption></figure></div>');e=$('#lb');e.onclick=ev=>{if(ev.target===e)closeLB()}}
+e.hidden=false;showLB()}
+function showLB(){const g=LBL[LB];$('#lbi').src='images/'+g[0]+'.webp';$('#lbi').alt=g[2];$('#lbc').innerHTML=g[2]+' <small>('+(LB+1)+'/'+LBL.length+')</small>'}
+function stepLB(d){LB=(LB+d+LBL.length)%LBL.length;showLB()}
+function closeLB(){$('#lb').hidden=true}
+addEventListener('keydown',e=>{const l=$('#lb');if(!l||l.hidden)return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(-1);if(e.key==='ArrowLeft')stepLB(1)});
 
 render();
 </script></body></html>
