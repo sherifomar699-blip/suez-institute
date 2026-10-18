@@ -79,6 +79,7 @@ footer{border-top:1px solid var(--line);padding:24px 18px;text-align:center;colo
 <header><div class="bar"><div class="brand" onclick="go('home')"><div class="mono">س</div><div><b>معهد السويس العالي لنظم المعلومات الإدارية</b><small>معاً لمستقبل أفضل</small></div></div><nav id="nav"></nav></div></header>
 <main id="app"></main>
 <footer>معهد السويس العالي لنظم المعلومات الإدارية — معاً لمستقبل أفضل<br>الدراسة أربع سنوات · برنامج نظم المعلومات الإدارية</footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 const DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
 const TS=['٩ – ١١','١١ – ١','١ – ٣'];
@@ -124,7 +125,7 @@ return `<section class="hero"><div><div><h1>معهد السويس العالي<s
 function schedPage(){return `<h2>جدول محاضرات الفصل الدراسي الأول 2026/2027</h2><div class="tabs">${LV.map((n,i)=>`<button class="${SL==i+1?'on':''}" onclick="SL=${i+1};render()">الفرقة ${n}</button>`).join('')}</div><div class="tabs">${['أ','ب'].map(g=>`<button class="${SG==g?'on':''}" onclick="SG='${g}';render()">المجموعة ${g}</button>`).join('')}</div>${sched(SL,SG)}`}
 function docPage(){return `<h2>هيئة التدريس</h2><div class="grid">${PK.map(k=>{const m=[...new Set(L.filter(x=>x.p.includes(k)).map(x=>x.s))];return `<div class="card"><b>${P[k]}</b>${k==='my'?'<div class="note">عميد المعهد</div>':''}<p class="note">${m.join(' · ')}</p></div>`}).join('')}</div>`}
 function login(){const h={student:['الكود الأكاديمي','2026001 / 1234'],doctor:['كود عضو هيئة التدريس','D01 / 1234'],admin:['اسم المستخدم','admin / admin123']}[ROLE];
-return `<div class="box card"><h2 style="margin-top:0">تسجيل الدخول</h2><div class="tabs">${[['student','طالب'],['doctor','عضو هيئة تدريس'],['admin','إدارة المعهد']].map(r=>`<button class="${ROLE==r[0]?'on':''}" onclick="ROLE='${r[0]}';ERR='';render()">${r[1]}</button>`).join('')}</div><label>${h[0]}</label><input id="u" autocomplete="username"><label>الرقم السري</label><input id="p" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"><div class="err">${ERR}</div><button class="btn" onclick="doLogin()">دخول</button><div class="demo">نسخة تجريبية — بيانات الدخول: ${h[1]}</div></div>`}
+return `<div class="box card"><h2 style="margin-top:0">تسجيل الدخول</h2><div class="tabs">${[['student','طالب'],['doctor','عضو هيئة تدريس'],['admin','إدارة المعهد']].map(r=>`<button class="${ROLE==r[0]?'on':''}" onclick="ROLE='${r[0]}';ERR='';render()">${r[1]}</button>`).join('')}</div><label>${h[0]}</label><input id="u" autocomplete="username"><label>الرقم السري</label><input id="p" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"><div class="err">${ERR}</div><button class="btn" onclick="doLogin()">دخول</button><div class="demo">استخدم بيانات الدخول التي سلّمتها لك إدارة المعهد.</div></div>`}
 function doLogin(){const u=$('#u').value.trim(),p=$('#p').value;let f=null;
 if(ROLE==='admin'&&u==='admin'&&p==='admin123')f={role:'admin',n:'عميد المعهد — أ.د/ محمد يونس'};
 if(ROLE==='doctor'){const k=PK.find(k=>code(k)===u.toUpperCase());if(k&&p==='1234')f={role:'doctor',k,n:P[k]}}
@@ -137,14 +138,14 @@ if(U.role==='student')return head+`<p class="note">الفرقة ${LV[U.l-1]} —
 if(U.role==='doctor'){const m=L.filter(x=>x.p.includes(U.k)).sort((a,b)=>DAYS.indexOf(a.d)-DAYS.indexOf(b.d)||a.i-b.i);
 return head+`<p class="note">إجمالي محاضراتك الأسبوعية: ${m.length}</p><div class="sw"><table><thead><tr><th>اليوم</th><th>الساعة</th><th>المقرر</th><th>الفرقة</th><th>المجموعة</th><th>المدرج</th></tr></thead><tbody>${m.map(x=>`<tr><td>${x.d}</td><td>${TS[x.i]}</td><td>${x.s}</td><td>${LV[x.l-1]}</td><td>${x.g}</td><td>${x.h}</td></tr>`).join('')}</tbody></table></div><h2>نشر خبر أو منشور</h2>${postForm()}<p><button class="btn" onclick="go('mat')">رفع محاضرة</button></p><h2>الإعلانات</h2>${annHTML()}`}
 return head+`<div class="st" style="margin-top:0"><div><b>${STU.length}</b><span>طالب مسجل</span></div><div><b>${PK.length}</b><span>عضو هيئة تدريس</span></div><div><b>${L.length}</b><span>محاضرة أسبوعياً</span></div><div><b>${ANN.length}</b><span>إعلان منشور</span></div></div>
-<h2>نشر خبر أو منشور</h2>${postForm()}<p><button class="btn" onclick="go('mat')">رفع محاضرة</button></p>${ANN.map((a,i)=>`<div class="ann">${esc(a.t)} <button class="x" onclick="ANN.splice(${i},1);sv('sti_a',ANN);render()">حذف</button></div>`).join('')}
+<h2>نشر خبر أو منشور</h2>${postForm()}<p><button class="btn" onclick="go('mat')">رفع محاضرة</button></p>${ANN.map((a,i)=>`<div class="ann">${esc(a.t)} <button class="x" onclick="delA(${i})">حذف</button></div>`).join('')}
 <h2>إضافة طالب</h2><div class="card f"><div><label>الاسم</label><input id="sn"></div><div><label>الكود الأكاديمي</label><input id="sc"></div><div><label>الرقم السري</label><input id="sp"></div><div><label>الفرقة</label><select id="sl">${LV.map((n,i)=>`<option value="${i+1}">${n}</option>`).join('')}</select></div><div><label>المجموعة</label><select id="sg"><option>أ</option><option>ب</option></select></div><button class="btn" onclick="addS()">إضافة الطالب</button></div>
-<h2>الطلاب</h2><div class="sw"><table><thead><tr><th>الاسم</th><th>الكود</th><th>الفرقة</th><th>المجموعة</th><th></th></tr></thead><tbody>${STU.map((s,i)=>`<tr><td>${esc(s.n)}</td><td>${esc(s.c)}</td><td>${LV[s.l-1]}</td><td>${s.g}</td><td><button class="x" onclick="STU.splice(${i},1);sv('sti_s',STU);render()">حذف</button></td></tr>`).join('')}</tbody></table></div>
-<h2>أعباء هيئة التدريس</h2><div class="sw"><table><thead><tr><th>العضو</th><th>الكود</th><th>المحاضرات أسبوعياً</th></tr></thead><tbody>${PK.map(k=>`<tr><td>${P[k]}</td><td>${code(k)}</td><td>${L.filter(x=>x.p.includes(k)).length}</td></tr>`).join('')}</tbody></table></div>`}
+<h2>الطلاب</h2><div class="sw"><table><thead><tr><th>الاسم</th><th>الكود</th><th>الفرقة</th><th>المجموعة</th><th></th></tr></thead><tbody>${STU.map((s,i)=>`<tr><td>${esc(s.n)}</td><td>${esc(s.c)}</td><td>${LV[s.l-1]}</td><td>${s.g}</td><td><button class="x" onclick="delS(${i})">حذف</button></td></tr>`).join('')}</tbody></table></div>
+<h2>حسابات هيئة التدريس</h2>${docForm()}<h2>أعباء هيئة التدريس</h2><div class="sw"><table><thead><tr><th>العضو</th><th>الكود</th><th>المحاضرات أسبوعياً</th></tr></thead><tbody>${PK.map(k=>`<tr><td>${P[k]}</td><td>${code(k)}</td><td>${L.filter(x=>x.p.includes(k)).length}</td></tr>`).join('')}</tbody></table></div>`}
 function addA(){const t=$('#at').value.trim();if(!t)return;ANN.unshift({t,d:new Date().toLocaleDateString('ar-EG')});sv('sti_a',ANN);render()}
 function addS(){const n=$('#sn').value.trim(),cc=$('#sc').value.trim(),p=$('#sp').value.trim();if(!n||!cc||!p||STU.some(s=>s.c===cc))return;STU.push({c:cc,p,n,l:+$('#sl').value,g:$('#sg').value});sv('sti_s',STU);render()}
 function render(){const nv=[['home','الرئيسية'],['schedule','الجداول'],['doctors','هيئة التدريس']];
-$('#nav').innerHTML=nv.map(n=>`<button class="${V==n[0]?'on':''}" onclick="go('${n[0]}')">${n[1]}</button>`).join('')+(U?`<button class="${V=='dash'?'on':''}" onclick="go('dash')">لوحتي</button><button onclick="U=null;go('home')">خروج</button>`:`<button class="cta" onclick="go('login')">دخول</button>`)+`<button onclick="tgl()" aria-label="تغيير المظهر">◐</button>`;
+$('#nav').innerHTML=nv.map(n=>`<button class="${V==n[0]?'on':''}" onclick="go('${n[0]}')">${n[1]}</button>`).join('')+(U?`<button class="${V=='dash'?'on':''}" onclick="go('dash')">لوحتي</button><button onclick="out()">خروج</button>`:`<button class="cta" onclick="go('login')">دخول</button>`)+`<button onclick="tgl()" aria-label="تغيير المظهر">◐</button>`;
 $('#app').innerHTML={home,schedule:schedPage,doctors:docPage,login,dash}[V]()}
 let SS=3,MSG='',MC='';
 const ALLC=[...new Set(L.map(x=>x.s))];
@@ -155,7 +156,7 @@ if(!a)return h+'<div class="card">جداول سكاشن هذه الفرقة ست
 if(SS==3)h+=`<h3>قواعد البيانات — الثلاثاء (المعامل)</h3><div class="sw"><table><thead><tr><th>المعمل</th><th>من ${TS[0]}</th><th>من ${TS[1]}</th></tr></thead><tbody>${LAB.map(r=>`<tr><th>${r[0]}<br><small class="em">${r[1]}</small></th><td>سكشن (${r[2]})</td><td>سكشن (${r[3]})</td></tr>`).join('')}</tbody></table></div>`;
 return h+`<h3>الخميس</h3><div class="sw"><table><thead><tr><th>المجموعة</th><th>من ${TS[0]}</th><th>من ${TS[1]}</th></tr></thead><tbody>${['أ','ب'].map(g=>`<tr><th>مجموعة ${g}</th>${[0,1].map(i=>{const x=a.find(y=>y[0]==i&&y[3]==g);return `<td><b>${x[1]}</b><small>${x[2]}<br>مدرج ${x[4]}</small></td>`}).join('')}</tr>`).join('')}</tbody></table></div>`}
 const postForm=()=>`<div class="card f"><div><label>النوع</label><select id="ak"><option>خبر</option><option>منشور هام</option></select></div><div><label>العنوان</label><input id="ah"></div><div style="grid-column:1/-1"><label>النص</label><input id="at"></div><button class="btn" onclick="addA()">نشر</button></div>`;
-function annHTML(){return ANN.length?ANN.map((a,i)=>`<div class="ann">${a.k?`<span class="tag ${a.k=='منشور هام'?'hot':''}">${a.k}</span> `:''}${a.h?`<b>${esc(a.h)}</b><br>`:''}${esc(a.t)}<div class="note">${a.a?esc(a.a)+' · ':''}${esc(a.d)}${U&&(U.role==='admin'||U.n===a.a)?` <button class="x" onclick="ANN.splice(${i},1);sv('sti_a',ANN);render()">حذف</button>`:''}</div></div>`).join(''):'<p class="note">لا توجد إعلانات حالياً.</p>'}
+function annHTML(){return ANN.length?ANN.map((a,i)=>`<div class="ann">${a.k?`<span class="tag ${a.k=='منشور هام'?'hot':''}">${a.k}</span> `:''}${a.h?`<b>${esc(a.h)}</b><br>`:''}${esc(a.t)}<div class="note">${a.a?esc(a.a)+' · ':''}${esc(a.d)}${U&&(U.role==='admin'||U.n===a.a)?` <button class="x" onclick="delA(${i})">حذف</button>`:''}</div></div>`).join(''):'<p class="note">لا توجد إعلانات حالياً.</p>'}
 function addA(){if(!U)return;const t=$('#at').value.trim();if(!t)return;ANN.unshift({h:$('#ah').value.trim(),t,k:$('#ak').value,a:U.n,d:new Date().toLocaleDateString('ar-EG')});sv('sti_a',ANN);render()}
 const annPage=()=>`<h2>الإعلانات والأخبار</h2>${U&&U.role!=='student'?postForm():'<p class="note">ينشر الدكاترة والعميد الأخبار والمنشورات المهمة هنا.</p>'}${annHTML()}`;
 const DB=new Promise(r=>{try{const q=indexedDB.open('sti',1);q.onupgradeneeded=()=>q.result.createObjectStore('f',{keyPath:'id'});q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}catch(e){r(null)}});
@@ -175,7 +176,49 @@ if(rm||!io)return;
 a.querySelectorAll('.card,.ann,.li,.st>div,.sw,.today').forEach((e,i)=>{e.classList.add('rv');e.style.transitionDelay=(i%8)*60+'ms';io.observe(e)});
 a.querySelectorAll('.st b').forEach(b=>{const o=b.textContent,n=+o.replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));if(!n)return;let s=null;const t=ts=>{s=s||ts;const p=Math.min((ts-s)/1100,1);b.textContent=Math.round(n*p).toLocaleString('ar-EG');if(p<1)requestAnimationFrame(t);else b.textContent=o};requestAnimationFrame(t)})}
 function render(){const nv=[['home','الرئيسية'],['schedule','الجداول'],['sections','السكاشن'],['ann','الإعلانات'],['mat','المحاضرات'],['doctors','هيئة التدريس']];
-$('#nav').innerHTML=nv.map(n=>`<button class="${V==n[0]?'on':''}" onclick="go('${n[0]}')">${n[1]}</button>`).join('')+(U?`<button class="${V=='dash'?'on':''}" onclick="go('dash')">لوحتي</button><button onclick="U=null;go('home')">خروج</button>`:`<button class="cta" onclick="go('login')">دخول</button>`)+`<button onclick="tgl()" aria-label="تغيير المظهر">◐</button>`;
+$('#nav').innerHTML=nv.map(n=>`<button class="${V==n[0]?'on':''}" onclick="go('${n[0]}')">${n[1]}</button>`).join('')+(U?`<button class="${V=='dash'?'on':''}" onclick="go('dash')">لوحتي</button><button onclick="out()">خروج</button>`:`<button class="cta" onclick="go('login')">دخول</button>`)+`<button onclick="tgl()" aria-label="تغيير المظهر">◐</button>`;
 $('#app').innerHTML={home,schedule:schedPage,sections:secPage,ann:annPage,mat:matPage,doctors:docPage,login,dash}[V]();MSG='';fx()}
+const SBU='https://lmqbrnygiexghohsrogv.supabase.co',SBK='sb_publishable_ylKwD_vIlMg3aF1jUiLThg_7tqS-fLe';
+const sb=supabase.createClient(SBU,SBK),sb2=supabase.createClient(SBU,SBK,{auth:{persistSession:false,autoRefreshToken:false,storageKey:'sti-aux'}});
+let MAT=[];STU=[];ANN=[];
+const fd=t=>new Date(t).toLocaleDateString('ar-EG');
+async function loadU(){const {data:{session}}=await sb.auth.getSession();if(!session){U=null;return false}
+const {data}=await sb.from('profiles').select('*').eq('id',session.user.id).maybeSingle();if(!data){U=null;return false}
+U={role:data.role,n:data.name,k:data.doc_key,l:data.level,g:data.grp,id:data.id};return true}
+async function loadA(){const {data}=await sb.from('announcements').select('*').order('created_at',{ascending:false});ANN=(data||[]).map(r=>({id:r.id,k:r.kind,h:r.title,t:r.body,a:r.author_name,aid:r.author_id,d:fd(r.created_at)}))}
+async function loadS(){if(U&&U.role==='admin'){const {data}=await sb.from('profiles').select('*').eq('role','student').order('code');STU=(data||[]).map(r=>({id:r.id,c:r.code,n:r.name,l:r.level,g:r.grp}))}}
+async function doLogin(){const u=$('#u').value.trim(),p=$('#p').value;if(!u||!p){ERR='اكتب الكود والرقم السري.';return render()}
+const em=ROLE==='admin'?'admin@sti-suez.com':u.toLowerCase()+'@sti-suez.com';
+const {error}=await sb.auth.signInWithPassword({email:em,password:p});
+if(error||!(await loadU())){await sb.auth.signOut();U=null;ERR='بيانات الدخول غير صحيحة أو الحساب غير مضاف. راجع الكود والرقم السري.';return render()}
+if(U.role!==ROLE){const r=U.role;await sb.auth.signOut();U=null;ERR='هذا الحساب من نوع آخر ('+({student:'طالب',doctor:'عضو هيئة تدريس',admin:'إدارة'})[r]+'). اختر النوع الصحيح من الأعلى.';return render()}
+await Promise.all([loadA(),loadS()]);go('dash')}
+async function out(){await sb.auth.signOut();U=null;STU=[];go('home')}
+function annHTML(){return ANN.length?ANN.map((a,i)=>`<div class="ann">${a.k?`<span class="tag ${a.k=='منشور هام'?'hot':''}">${esc(a.k)}</span> `:''}${a.h?`<b>${esc(a.h)}</b><br>`:''}${esc(a.t)}<div class="note">${a.a?esc(a.a)+' · ':''}${esc(a.d)}${U&&(U.role==='admin'||U.id===a.aid)?` <button class="x" onclick="delA(${i})">حذف</button>`:''}</div></div>`).join(''):'<p class="note">لا توجد إعلانات حالياً.</p>'}
+async function addA(){if(!U)return;const t=$('#at').value.trim();if(!t)return;const {error}=await sb.from('announcements').insert({kind:$('#ak').value,title:$('#ah').value.trim(),body:t,author_name:U.n});if(error)alert('تعذر النشر: '+error.message);await loadA();render()}
+async function delA(i){await sb.from('announcements').delete().eq('id',ANN[i].id);await loadA();render()}
+async function mk(code,pw,prof){if(!/^[A-Za-z0-9]+$/.test(code)){alert('الكود يتكون من حروف إنجليزية وأرقام فقط.');return false}
+const {data,error}=await sb2.auth.signUp({email:code.toLowerCase()+'@sti-suez.com',password:pw});
+if(error||!data.user){alert('تعذر إنشاء الحساب: '+(error?error.message:'الكود مستخدم'));return false}
+const e2=(await sb.from('profiles').insert({id:data.user.id,code,...prof})).error;if(e2){alert('تعذر حفظ البيانات: '+e2.message);return false}return true}
+async function addS(){const n=$('#sn').value.trim(),c=$('#sc').value.trim(),p=$('#sp').value;if(!n||!c||p.length<6){alert('أكمل الاسم والكود، وكلمة السر 6 أحرف على الأقل.');return}
+if(await mk(c,p,{role:'student',name:n,level:+$('#sl').value,grp:$('#sg').value})){await loadS();render()}}
+async function delS(i){if(!confirm('حذف بيانات الطالب؟ لن يتمكن من الدخول بعدها.'))return;await sb.from('profiles').delete().eq('id',STU[i].id);await loadS();render()}
+const docForm=()=>`<div class="card f"><div><label>عضو هيئة التدريس</label><select id="dk">${PK.map(k=>`<option value="${k}">${code(k)} — ${P[k]}</option>`).join('')}</select></div><div><label>الرقم السري (6 أحرف فأكثر)</label><input id="dp"></div><button class="btn" onclick="addD()">إنشاء الحساب</button></div><p class="note">كود الدخول للدكتور هو الكود الظاهر قبل اسمه (مثل D02).</p>`;
+async function addD(){const k=$('#dk').value,p=$('#dp').value;if(p.length<6){alert('الرقم السري 6 أحرف على الأقل.');return}if(await mk(code(k),p,{role:'doctor',name:P[k],doc_key:k}))alert('تم إنشاء حساب '+P[k]+' — الكود: '+code(k))}
+async function upM(){const f=$('#mf').files[0],t=$('#mt').value.trim();if(!f||!t){MSG='اختر ملف PDF أو صورة واكتب عنوان المحاضرة.';return render()}
+if(!/^(application\/pdf|image\/)/.test(f.type)){MSG='الملفات المسموحة PDF أو صور فقط.';return render()}
+const path=Date.now()+'_'+Math.random().toString(36).slice(2,8)+(f.type.includes('pdf')?'.pdf':'.jpg');
+const u=await sb.storage.from('materials').upload(path,f,{contentType:f.type});if(u.error){MSG='تعذر الرفع: '+u.error.message;return render()}
+const r=await sb.from('materials').insert({course:$('#mc').value,title:t,file_path:path,file_type:f.type,author_name:U.n});MSG=r.error?'تعذر الحفظ: '+r.error.message:'تم رفع المحاضرة.';render()}
+async function loadM(){const e=$('#ml');if(!e)return;if(!U){e.innerHTML='<p class="note">سجّل الدخول لعرض المحاضرات.</p>';return}
+const {data}=await sb.from('materials').select('*').order('created_at',{ascending:false});MAT=(data||[]).filter(x=>!MC||x.course==MC);
+e.innerHTML=MAT.length?MAT.map((x,i)=>`<div class="card"><b>${esc(x.title)}</b><div class="note">${esc(x.course)} · ${esc(x.author_name||'')} · ${fd(x.created_at)}</div><p><button class="btn" onclick="vM(${i})">عرض ${x.file_type.includes('pdf')?'PDF':'الصورة'}</button>${U.role==='admin'||U.id===x.author_id?` <button class="x" onclick="dM(${i})">حذف</button>`:''}</p></div>`).join(''):'<p class="note">لا توجد محاضرات مرفوعة بعد.</p>'}
+function vM(i){const x=MAT[i],u=sb.storage.from('materials').getPublicUrl(x.file_path).data.publicUrl;
+const b=x.file_type.includes('pdf')?`<iframe src="${u}" style="width:100%;height:70vh;border:0"></iframe><p><a href="${u}" target="_blank" rel="noopener">فتح في نافذة جديدة</a></p>`:`<img src="${u}" style="max-width:100%" alt="">`;
+$('#mv').innerHTML=`<div class="card"><button class="x" onclick="$('#mv').innerHTML=''">إغلاق</button>${b}</div>`;$('#mv').scrollIntoView()}
+async function dM(i){const x=MAT[i];if(!confirm('حذف المحاضرة؟'))return;await sb.storage.from('materials').remove([x.file_path]);await sb.from('materials').delete().eq('id',x.id);loadM()}
+(async()=>{await loadU();await Promise.all([loadA(),loadS()]);render()})();
+
 render();
 </script></body></html>
