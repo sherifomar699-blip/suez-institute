@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>منصة الطالب | معهد السويس العالي لنظم المعلومات الإدارية</title>
+<meta name="description" content="جدول المحاضرات والسكاشن، الدكاترة، ما تم شرحه، والنتائج في مكان واحد.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23072E37'/%3E%3Cpath d='M10 44c8-6 14 6 22 0s14 6 22 0' fill='none' stroke='%2314B8C4' stroke-width='5' stroke-linecap='round'/%3E%3Cpath d='M32 10v22l14-4z' fill='%23F2A93B'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Markazi+Text:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --deep:#072E37; --ink:#0B2A33; --canal:#0E7C86; --canal2:#14B8C4; --tint:#DDEEF0; --bg:#F2F7F8; --card:#fff;
+  --amber:#F2A93B; --red:#C8433F; --mut:#58737A; --line:#CCDFE2; --ok:#1E8E5A;
+  --head:'Markazi Text','IBM Plex Sans Arabic',serif; --body:'IBM Plex Sans Arabic',Tahoma,sans-serif;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16.5px/1.8 var(--body)}
+h1,h2,h3{font-family:var(--head);margin:0;line-height:1.2;font-weight:700}
+p{margin:0}
+a{color:var(--canal)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.wrap{max-width:1100px;margin:auto;padding:0 5vw}
+.hide{display:none!important}
+
+/* header */
+.top{background:var(--deep);color:#fff;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='60' viewBox='0 0 240 60'%3E%3Cpath d='M0 40c20-14 40 14 60 0s40 14 60 0 40 14 60 0 40 14 60 0' fill='none' stroke='%23ffffff14' stroke-width='2'/%3E%3Cpath d='M0 52c20-14 40 14 60 0s40 14 60 0 40 14 60 0 40 14 60 0' fill='none' stroke='%23ffffff0d' stroke-width='2'/%3E%3C/svg%3E");background-repeat:repeat-x;background-position:bottom}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:16px;padding-bottom:12px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand svg{width:46px;height:46px;flex:none}
+.brand b{display:block;font:700 1.55rem var(--head);line-height:1.1}
+.brand span{display:block;font-size:.88rem;color:#A9D4DA}
+.sel{display:flex;gap:10px;flex-wrap:wrap}
+.sel label{display:flex;flex-direction:column;font-size:.76rem;color:#A9D4DA;gap:2px}
+.sel select{background:#0d3d49;color:#fff;border:1px solid #2c6d7a;border-radius:8px;padding:6px 10px;min-width:118px}
+.sub{padding-bottom:12px;font-size:.88rem;color:#A9D4DA;display:flex;gap:6px 18px;flex-wrap:wrap}
+.sub b{color:#fff;font-weight:500}
+
+/* tabs */
+.tabs{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line)}
+.tabs .wrap{display:flex;gap:4px;overflow-x:auto}
+.tabs button{flex:none;background:none;border:0;border-bottom:4px solid transparent;padding:12px 16px 9px;cursor:pointer;color:var(--mut);font-weight:500}
+.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--amber);font-weight:600}
+main{padding:30px 0 50px}
+.view{display:none}
+.view.on{display:block}
+.view h1{font-size:clamp(2rem,5vw,3.1rem)}
+.lead{margin-bottom:22px}
+.lead p{color:var(--mut);margin-top:6px}
+
+/* now line */
+.now{margin:18px 0 8px;padding:16px 18px;background:var(--deep);color:#fff;border-radius:10px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.now h2{font-size:1.55rem}
+.now p{color:#A9D4DA}
+.now.live{border-right:6px solid var(--amber)}
+.bar{position:relative;height:56px;margin:14px 0 34px;border-bottom:2px solid var(--canal)}
+.bar .seg{position:absolute;top:8px;height:30px;border-radius:6px;background:var(--tint);border:1.5px solid var(--canal);font-size:.72rem;line-height:27px;text-align:center;overflow:hidden;white-space:nowrap;padding:0 4px}
+.bar .seg.live{background:var(--amber);border-color:#b97a14;font-weight:600}
+.bar .seg.done{background:#E6ECEE;border-color:#B5C6CB;color:var(--mut)}
+.bar .seg.cancel{background:#F7DEDC;border-color:var(--red);color:var(--red);text-decoration:line-through}
+.bar .tk{position:absolute;top:100%;transform:translateX(50%);font-size:.74rem;color:var(--mut);line-height:1.4}
+.bar .tk::before{content:"";display:block;width:1px;height:7px;background:var(--canal);margin:0 auto 1px}
+.ship{position:absolute;top:-6px;width:30px;height:34px;transform:translateX(50%);transition:right .6s}
+.ship svg{width:100%;height:100%}
+.ship::after{content:"";position:absolute;right:50%;top:34px;height:20px;border-right:2px dashed var(--amber)}
+
+/* agenda */
+.agenda{margin-top:18px}
+.ag{display:grid;grid-template-columns:104px 1fr;gap:6px 18px;padding:16px 0;border-bottom:1px solid var(--line)}
+.ag:first-child{border-top:1px solid var(--line)}
+.ag .t{font:700 1.7rem var(--head);line-height:1.1}
+.ag .t small{display:block;font:400 .82rem var(--body);color:var(--mut)}
+.ag h3{font-size:1.5rem}
+.ag .meta{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:4px;color:var(--mut);font-size:.93rem}
+.ag.live{background:linear-gradient(90deg,#F2A93B1f,transparent);border-right:5px solid var(--amber);padding-right:12px}
+.ag.done{opacity:.6}
+.ag.cancel h3{text-decoration:line-through;color:var(--red)}
+.chip{display:inline-block;padding:0 10px;border-radius:99px;font-size:.78rem;font-weight:600;background:var(--tint);color:var(--canal);vertical-align:middle}
+.chip.live{background:var(--amber);color:#3d2700}.chip.cancel{background:#F7DEDC;color:var(--red)}.chip.warn{background:#FFF1D6;color:#8a5a00}.chip.demo{background:#EEE9FF;color:#5a45b8}.chip.done{background:#E6ECEE;color:var(--mut)}
+.note{margin-top:6px;padding:6px 12px;background:#F7DEDC;border-radius:6px;color:var(--red);font-size:.92rem}
+.empty{padding:34px 18px;border:1.5px dashed var(--line);border-radius:10px;color:var(--mut);text-align:center}
+.empty b{display:block;color:var(--ink);font:700 1.4rem var(--head);margin-bottom:4px}
+.secrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0 0;font-size:.95rem}
+.secrow input{width:92px;border:1.5px solid var(--line);border-radius:8px;padding:5px 10px;background:#fff}
+details.sim{margin-top:22px;border:1px solid var(--line);border-radius:8px;background:#fff;padding:8px 14px;font-size:.92rem}
+details.sim summary{cursor:pointer;color:var(--mut)}
+.simrow{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-top:10px}
+.simrow label{display:flex;flex-direction:column;font-size:.8rem;color:var(--mut)}
+.simrow select,.simrow input{border:1.5px solid var(--line);border-radius:8px;padding:5px 8px;background:#fff}
+
+/* generic */
+.sec{margin-top:36px}
+.sec h2{font-size:1.9rem;margin-bottom:10px}
+.btn{background:var(--canal);color:#fff;border:0;border-radius:8px;padding:8px 20px;font-weight:600;cursor:pointer}
+.btn:hover{background:#0b6972}
+.btn.ghost{background:none;color:var(--canal);border:1.5px solid var(--canal)}
+.btn.sm{padding:3px 12px;font-size:.85rem}
+.btn.red{background:var(--red)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px}
+.chips button{border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:3px 16px;cursor:pointer}
+.chips button[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#fff}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line)}
+th,td{padding:10px 12px;border:1px solid var(--line);text-align:right;vertical-align:top}
+th{background:var(--tint);font-weight:600;white-space:nowrap}
+td .ci{padding:6px 0}
+td .ci+.ci{border-top:1px dashed var(--line)}
+td .ci b{display:block}
+td .ci small{display:block;color:var(--mut);line-height:1.5}
+td.hl{background:#FFF4DC}
+.tabsm{display:flex;gap:8px;margin:6px 0 16px}
+.tabsm button{border:0;border-bottom:3px solid transparent;background:none;padding:6px 12px;cursor:pointer;color:var(--mut);font-weight:500}
+.tabsm button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--canal);font-weight:600}
+.finder{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:18px}
+.finder .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.finder input{border:1.5px solid var(--line);border-radius:8px;padding:6px 12px;width:130px}
+.found{margin-top:12px;padding:12px 16px;background:var(--tint);border-radius:8px}
+.found b{font:700 1.4rem var(--head)}
+
+/* people */
+.dean{display:flex;gap:18px;align-items:center;background:var(--deep);color:#fff;border-radius:10px;padding:20px 22px;margin-bottom:22px}
+.dean .av{width:76px;height:76px;font-size:1.7rem;background:var(--amber);color:#3d2700}
+.dean h3{font-size:1.8rem}
+.dean p{color:#A9D4DA}
+.pl{border-top:1px solid var(--line)}
+.pr{display:flex;gap:16px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+.av{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;flex:none;background:var(--tint);color:var(--canal);font:700 1.3rem var(--head)}
+.pr h3{font-size:1.35rem}
+.pr p{color:var(--mut);font-size:.93rem}
+.pr .cs{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+
+/* notes */
+.nt{padding:16px 0;border-bottom:1px solid var(--line)}
+.nt:first-child{border-top:1px solid var(--line)}
+.nt h3{font-size:1.4rem}
+.nt ul{margin:8px 0 0;padding-right:20px}
+.nt small{color:var(--mut)}
+
+/* results */
+.lookup{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 6px}
+.lookup input{border:1.5px solid var(--line);border-radius:8px;padding:8px 14px;width:min(280px,100%);background:#fff;direction:ltr;text-align:right}
+.rs{display:flex;gap:16px;flex-wrap:wrap;align-items:baseline;margin:16px 0 10px}
+.rs h2{font-size:1.8rem}
+.sum{display:flex;gap:26px;flex-wrap:wrap;margin-top:12px}
+.sum div b{display:block;font:700 1.9rem var(--head)}
+.pass{color:var(--ok);font-weight:600}.fail{color:var(--red);font-weight:600}
+
+/* admin */
+.demo-note{padding:12px 16px;background:#EEE9FF;border-radius:8px;color:#4a3a99;margin-bottom:18px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.box{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:20px}
+.box h3{font-size:1.4rem;margin-bottom:8px}
+.box label{display:block;margin-top:10px;font-size:.92rem;font-weight:500}
+.box input,.box select,.box textarea{display:block;width:100%;margin-top:3px;border:1.5px solid var(--line);border-radius:8px;padding:7px 10px;background:#fff}
+.box textarea{min-height:84px;resize:vertical}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.lrow{display:grid;grid-template-columns:auto 1fr 1.3fr;gap:10px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
+.lrow input[type=text]{margin:0}
+.acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+
+/* pitch */
+.pitch{display:grid;grid-template-columns:1fr 1fr;gap:34px;margin-top:44px;padding-top:26px;border-top:2px solid var(--ink)}
+.pitch h3{font-size:1.6rem;margin-bottom:6px}
+.pitch ul{margin:0;padding-right:20px;color:var(--mut)}
+.pitch li{margin:4px 0}
+
+footer{background:var(--deep);color:#A9D4DA;padding:24px 0 calc(24px + env(safe-area-inset-bottom,0px));font-size:.9rem}
+footer .wrap{display:flex;justify-content:space-between;gap:10px 30px;flex-wrap:wrap}
+footer b{color:#fff}
+.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translate(-50%,140px);background:var(--ink);color:#fff;padding:10px 22px;border-radius:8px;transition:transform .3s;z-index:90}
+.toast.on{transform:translate(-50%,0)}
+
+@media(max-width:760px){
+  .cols,.pitch{grid-template-columns:1fr}
+  .ag{grid-template-columns:78px 1fr;gap:4px 12px}
+  .ag .t{font-size:1.35rem}
+  .g3{grid-template-columns:1fr}
+  .lrow{grid-template-columns:auto 1fr}
+  .lrow input:last-child{grid-column:1/-1}
+  .dean{flex-direction:column;text-align:center}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap hd">
+    <div class="brand">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#0d3d49"/><path d="M8 46c8-6 14 6 24 0s16 6 24 0" fill="none" stroke="#14B8C4" stroke-width="4.5" stroke-linecap="round"/><path d="M32 10v24l15-4z" fill="#F2A93B"/><path d="M32 10v24H17z" fill="#fff" opacity=".9"/></svg>
+      <div><b id="bName">معهد السويس العالي</b><span id="bSub">لنظم المعلومات الإدارية</span></div>
+    </div>
+    <div class="sel">
+      <label>الفرقة<select id="selLevel"></select></label>
+      <label>المجموعة<select id="selGroup"></select></label>
+    </div>
+  </div>
+  <div class="wrap sub"><span id="sMin"></span><span id="sTerm"></span><b id="sSlogan"></b></div>
+</header>
+
+<nav class="tabs" aria-label="أقسام المنصة"><div class="wrap" id="tabs">
+  <button data-v="today" aria-selected="true">النهارده</button>
+  <button data-v="schedule" aria-selected="false">الجداول</button>
+  <button data-v="people" aria-selected="false">الدكاترة</button>
+  <button data-v="notes" aria-selected="false">ما تم شرحه</button>
+  <button data-v="results" aria-selected="false">النتائج</button>
+  <button data-v="admin" aria-selected="false">لوحة الإدارة</button>
+</div></nav>
+
+<main class="wrap">
+
+<!-- النهارده -->
+<section class="view on" id="v-today">
+  <div class="lead"><h1 id="tTitle"></h1><p id="tSub"></p></div>
+  <div id="tNow"></div>
+  <div id="tBar"></div>
+  <div class="secrow"><label for="secIn">رقم سكشنك (للمعامل):</label><input id="secIn" type="number" min="1" max="99" inputmode="numeric" placeholder="مثلًا 7"><span id="secMsg" class="chip hide"></span></div>
+  <div class="agenda" id="tList"></div>
+  <details class="sim"><summary>أدوات العرض: جرّب أي يوم وأي ساعة</summary>
+    <div class="simrow">
+      <label>اليوم<select id="simDay"></select></label>
+      <label>الساعة<input id="simTime" type="time" value="10:30"></label>
+      <button class="btn sm" id="simOn" type="button">جرّب</button>
+      <button class="btn sm ghost" id="simOff" type="button">الوقت الحقيقي</button>
+    </div>
+  </details>
+  <div class="sec"><h2>آخر الإعلانات</h2><div id="tNews"></div></div>
+  <div class="pitch">
+    <div><h3>الطالب بيلاقي</h3><ul>
+      <li>جدوله ومحاضرة النهارده وعدّاد للمحاضرة الجاية.</li>
+      <li>معمله وميعاد سكشنه بكتابة رقمه بس.</li>
+      <li>الدكاترة اللي هيحاضروا، وملخص اللي اتشرح.</li>
+      <li>نتيجته بكوده، من الموبايل.</li>
+    </ul></div>
+    <div><h3>الإدارة بتقدر</h3><ul>
+      <li>تلغي أو تأجل محاضرة فتظهر للطلاب فورًا.</li>
+      <li>تنزل إعلان أو ملخص محاضرة في ثواني.</li>
+      <li>ترفع الدرجات وتعدّلها بنفسها.</li>
+      <li>تحدّث الجداول من غير مبرمج.</li>
+    </ul></div>
+  </div>
+</section>
+
+<!-- الجداول -->
+<section class="view" id="v-schedule">
+  <div class="lead"><h1>الجداول</h1><p id="scSub"></p></div>
+  <div class="tabsm" id="scTabs"><button data-t="lec" aria-selected="true">المحاضرات والمدرجات</button><button data-t="lab" aria-selected="false">سكاشن المعامل</button></div>
+  <div id="scBody"></div>
+</section>
+
+<!-- الدكاترة -->
+<section class="view" id="v-people">
+  <div class="lead"><h1>هيئة التدريس</h1><p>الدكاترة والهيئة المعاونة، والمواد اللي بيدرّسوها.</p></div>
+  <div id="pplBody"></div>
+</section>
+
+<!-- ما تم شرحه -->
+<section class="view" id="v-notes">
+  <div class="lead"><h1>ما تم شرحه</h1><p>ملخص كل محاضرة بنقاطها الرئيسية، بالترتيب من الأحدث.</p></div>
+  <div class="chips" id="ntChips"></div>
+  <div id="ntBody"></div>
+</section>
+
+<!-- النتائج -->
+<section class="view" id="v-results">
+  <div class="lead"><h1>نتيجتك</h1><p>اكتب كود الطالب وشوف درجاتك. كل طالب بيشوف نتيجته هو بس.</p></div>
+  <div class="lookup"><input id="rCodeIn" inputmode="numeric" placeholder="كود الطالب" autocomplete="off"><button class="btn" id="rGo" type="button">اعرض النتيجة</button></div>
+  <p class="chip demo">النتايج دي تجريبية. جرّب الكود 20260001 أو 20260002</p>
+  <div id="rBody"></div>
+</section>
+
+<!-- الإدارة -->
+<section class="view" id="v-admin">
+  <div class="lead"><h1>لوحة إدارة المعهد</h1><p>اللي بتعمله هنا بيظهر للطالب في نفس اللحظة.</p></div>
+  <div class="demo-note">نسخة العرض: التعديلات بتتحفظ على جهازك بس. في النسخة الفعلية بتتخزن على سيرفر وبصلاحيات دخول لكل مسؤول.</div>
+
+  <div class="box"><h3>إلغاء أو تأجيل محاضرة</h3><p style="color:var(--mut);font-size:.92rem">علّم على المحاضرة واكتب ملحوظة للطلاب، وشوف تبويب «النهارده» و«الجداول».</p><div id="aLect"></div></div>
+
+  <div class="cols">
+    <div>
+      <div class="box"><h3>إعلان جديد</h3>
+        <label>العنوان<input id="aTitle"></label>
+        <label>النص<textarea id="aText"></textarea></label>
+        <div class="acts"><button class="btn" id="aAdd" type="button">انشر الإعلان</button></div></div>
+      <div class="box"><h3>ملخص محاضرة جديد</h3>
+        <label>المادة<select id="nCourse"></select></label>
+        <label>التاريخ<input id="nDate" type="date"></label>
+        <label>عنوان المحاضرة<input id="nTitle"></label>
+        <label>النقاط الرئيسية (كل نقطة في سطر)<textarea id="nPoints"></textarea></label>
+        <label>رابط ملف أو فيديو (اختياري)<input id="nLink" inputmode="url" style="direction:ltr;text-align:right"></label>
+        <div class="acts"><button class="btn" id="nAdd" type="button">أضف الملخص</button></div></div>
+    </div>
+    <div>
+      <div class="box"><h3>رصد درجة طالب</h3>
+        <label>كود الطالب<input id="rCode" inputmode="numeric"></label>
+        <label>اسم الطالب<input id="rName"></label>
+        <label>المادة<select id="rCourse"></select></label>
+        <div class="g3"><label>أعمال السنة (20)<input id="rWork" type="number" min="0" max="20"></label><label>ميد (20)<input id="rMid" type="number" min="0" max="20"></label><label>نهائي (60)<input id="rFinal" type="number" min="0" max="60"></label></div>
+        <div class="acts"><button class="btn" id="rAdd" type="button">احفظ الدرجة</button></div></div>
+      <div class="box"><h3>بيانات العرض</h3>
+        <p style="color:var(--mut);font-size:.92rem">تصدير أو استيراد كل التعديلات اللي عملتها، أو إعادة المنصة لحالتها الأصلية.</p>
+        <div class="acts"><button class="btn ghost" id="exp" type="button">تصدير ملف</button><label class="btn ghost" style="margin:0;display:inline-block">استيراد ملف<input id="imp" type="file" accept="application/json" class="hide"></label><button class="btn red" id="rst" type="button">إعادة ضبط</button></div></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer><div class="wrap">
+  <span><b id="fName"></b> — <span id="fMin"></span></span>
+  <span>الجداول وأسماء الدكاترة من جداول المعهد الرسمية. الإعلانات وملخصات المحاضرات والنتائج هنا أمثلة توضيحية.</span>
+</div></footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="data.js"></script>
+<script src="logic.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
